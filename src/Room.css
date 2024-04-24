@@ -1,0 +1,9 @@
+.grid-2row {
+  display: grid;
+  height: 80%;
+  grid-template-rows: 1fr 1fr;
+}
+
+.row {
+  flex: 1;
+}

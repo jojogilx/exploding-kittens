@@ -1,0 +1,33 @@
+#cat-lighter {
+  min-width: 400px;
+  min-height: 400px;
+  max-height: 65vh;
+  object-fit: contain;
+}
+
+#edition {
+  color: white;
+  font-size: 30px;
+  font-family: cursive;
+  margin-top: -60px;
+}
+
+.fwIcons {
+  height: 35px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.content {
+  margin-left: 100px;
+  margin-right: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.start-button {
+  font-size: 34px;
+  padding: 10px 40px 10px 40px;
+  max-width: 300px;
+  margin-top: 12px;
+}

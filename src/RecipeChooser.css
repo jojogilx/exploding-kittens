@@ -1,0 +1,25 @@
+.container {
+  background-color: white;
+  background-image: radial-gradient(#111111 0.5px, white 0.5px);
+  background-size: 15px 15px;
+  height: 100vh;
+}
+
+.recipe-face {
+  width: 320px;
+}
+
+.ingredients-card {
+  margin-top: 20px;
+}
+
+.no-ingredients {
+  z-index: 4;
+  position: relative;
+  top: 0;
+  right: 0;
+}
+
+.recipe-unfolded {
+  z-index: 2;
+}

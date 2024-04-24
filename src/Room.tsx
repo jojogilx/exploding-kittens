@@ -6,6 +6,8 @@ import "./Room.css";
 export function Room() {
   const { roomName } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [players, setPlayers] = useState([] as string[]);
+  const [startDisabled, setStartDisabled] = useState(true);
   return (
     <div className="container padded">
       <h2 id="room-name">{roomName}</h2>
@@ -36,9 +38,13 @@ export function Room() {
 
         <div className="flex-row row-spaced">
           <div>
-            <h4>Recipe details</h4>
+            <h4>Players</h4>
             <div>
-              {recipe ? <div>details todo:</div> : <div>Choose a recipe</div>}
+              {players.length ? (
+                <div>list players, todo</div>
+              ) : (
+                <div>No players </div>
+              )}
             </div>
           </div>
 
@@ -50,8 +56,8 @@ export function Room() {
               </div>
             ) : (
               <div>
-                <Link to="/recipes">
-                  <button>Choose Recipe</button>
+                <Link to={"/game/" + roomName}>
+                  <button disabled={startDisabled}>START GAME</button>
                 </Link>
               </div>
             )}

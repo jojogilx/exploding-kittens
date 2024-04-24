@@ -12,7 +12,9 @@ function App() {
         <Route path="/" element={<MainScreen />} />
         <Route path="/rooms" element={<RoomList />} />
         <Route path="/rooms/:roomName" element={<Room />} />
-        <Route path="/recipes" element={<RecipeChooser />} />
+        <Route path="/game/:roomName" element={<Room />} /> {/*TODO CHANGE*/}
+        <Route path="/recipes" element={<RecipeChooser />} />{" "}
+        {/*TODO: make a portal*/}
       </Routes>
     </>
   );

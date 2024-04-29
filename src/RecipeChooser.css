@@ -7,19 +7,37 @@
 
 .recipe-face {
   width: 320px;
+  box-shadow: 0px 20px 10px -15px #111;
+}
+
+.recipe-card {
+  width: 320px;
 }
 
 .ingredients-card {
   margin-top: 20px;
 }
 
-.no-ingredients {
+.ingredients {
   z-index: 4;
-  position: relative;
   top: 0;
   right: 0;
 }
 
 .recipe-unfolded {
   z-index: 2;
+}
+
+.glow {
+  margin-top: 20px;
+  background-color: #aaffff;
+  box-shadow: 0px 0px 20px 5px #0ff;
+}
+
+.fit {
+  width: fit-content;
+}
+
+.carrousel {
+  padding-bottom: 40px;
 }

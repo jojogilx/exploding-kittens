@@ -1,9 +1,11 @@
 .grid-2row {
   display: grid;
-  height: 80%;
+  height: 70%;
   grid-template-rows: 1fr 1fr;
 }
 
-.row {
-  flex: 1;
+.grid-5row {
+  display: grid;
+  height: 100%;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
 }

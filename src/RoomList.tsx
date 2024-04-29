@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./RoomList.css";
 import homeIcon from "./images/home.png";
 import closeIcon from "./images/closeIcon.webp";
 import catShrug from "./images/catshrug.png";
 import { Link } from "react-router-dom";
 import Popup from "reactjs-popup";
-import { Room } from "./types";
+import { Recipe, Room } from "./types";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { RoomListContext, UserContext } from "./App";
 
 import { useNavigate } from "react-router-dom";
 
@@ -32,26 +33,29 @@ export const RoomList = () => {
       const jsonString = JSON.stringify(lastJsonMessage); // Stringify the object
       const decodedRooms = JSON.parse(jsonString) as Room[];
 
-      setRooms(decodedRooms);
+      setRoomList(decodedRooms);
       console.log(`Got a new message:`, decodedRooms);
     } catch (error) {
       console.error(`Error parsing JSON message:`, error);
     }
   }, [lastJsonMessage]);
 
-  const [rooms, setRooms] = useState([] as Room[]);
+  const { roomList, setRoomList } = useContext(RoomListContext);
+  const { user, setUser } = useContext(UserContext);
+
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [popupShown, setPopupShown] = useState(false);
+  const [popupRecipeShown, setPopupRecipeShown] = useState(false);
   const [popupCreateShown, setPopupCreateShown] = useState(false);
-  const [playerName, setPlayerName] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   const joinable = (r: Room) => {
     return r.started || r.players.length == r.recipe?.maxPlayers;
   };
 
   const handlePlayerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlayerName(e.target.value);
+    setUser(e.target.value);
   };
   const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
@@ -78,6 +82,66 @@ export const RoomList = () => {
       .catch((error) => console.log("error was ", error));
   };
 
+  const CreateRoomPopup = () => {
+    return (
+      <Popup open={popupCreateShown} onClose={() => setPopupCreateShown(false)}>
+        <div className="popup">
+          <img
+            src={closeIcon}
+            alt="close"
+            className="icons-close clickable"
+            onClick={() => setPopupCreateShown(false)}
+          />
+          <h3>CREATE ROOM</h3>
+          <div>
+            <div className="flex-row field-create">
+              <h5 className="label">ROOM NAME</h5>
+              <input
+                type="text"
+                maxLength={20}
+                value={roomName}
+                placeholder="Room name..."
+                className="input pop2"
+                onChange={handleRoomNameChange}
+              />
+            </div>
+          </div>
+          <div className="flex-row field-create">
+            <h5 className="label">PLAYER NAME</h5>
+            <input
+              type="text"
+              value={user}
+              maxLength={20}
+              placeholder="Player name..."
+              className="input pop2"
+              onChange={handlePlayerNameChange}
+            />
+          </div>
+
+          <div>
+            <Link to={"/recipes"}>
+              <button className="flame-button  create-row">
+                {recipe ? "CHANGE RECIPE" : "CHOOSE RECIPE"}
+              </button>
+            </Link>
+          </div>
+
+          <button
+            className="flame-button create-row"
+            disabled={user === ""}
+            onClick={() => {
+              setPopupCreateShown(false);
+              handleCreateRoom();
+              handleJoinRoom(roomName!);
+            }}
+          >
+            CREATE
+          </button>
+        </div>
+      </Popup>
+    );
+  };
+
   return (
     <div className="content">
       <Link to="/">
@@ -98,58 +162,14 @@ export const RoomList = () => {
         >
           CREATE ROOM
         </button>
-        <Popup
-          open={popupCreateShown}
-          onClose={() => setPopupCreateShown(false)}
-        >
-          <div className="popup">
-            <img
-              src={closeIcon}
-              alt="close"
-              className="icons-close clickable"
-              onClick={() => setPopupCreateShown(false)}
-            />
-            <h3>CREATE ROOM</h3>
-            <div className="flex-row">
-              <h5 className="label">ROOM NAME</h5>
-              <input
-                type="text"
-                value={roomName}
-                placeholder="Room name..."
-                className="player-input pop2"
-                onChange={handleRoomNameChange}
-              />
-            </div>
-            <div className="flex-row">
-              <h5 className="label">PLAYER NAME</h5>
-              <input
-                type="text"
-                value={playerName}
-                placeholder="Player name..."
-                className="player-input pop2"
-                onChange={handlePlayerNameChange}
-              />
-            </div>
-            <button
-              className="join-button"
-              disabled={playerName === ""}
-              onClick={() => {
-                setPopupCreateShown(false);
-                handleCreateRoom();
-                handleJoinRoom(roomName!);
-              }}
-            >
-              CREATE
-            </button>
-          </div>
-        </Popup>
+        <CreateRoomPopup />
       </div>
 
       <div className="pages">
-        <ul className="rooms-list">
-          {rooms?.length > 0 ? (
-            rooms.map((r, index) => (
-              <li className="room" key={index}>
+        <ul className="rooms-list bottom-border">
+          {roomList?.length > 0 ? (
+            roomList.map((r) => (
+              <li className="room" key={r.name}>
                 <span className="room-name bold">{r.name}</span>
                 <span className="status">
                   <div
@@ -168,7 +188,7 @@ export const RoomList = () => {
                   {r.players.toString()}
                 </span>
                 <button
-                  className="join-button"
+                  className="flame-button"
                   disabled={joinable(r)}
                   onClick={() => {
                     setSelectedRoom(r);
@@ -197,14 +217,14 @@ export const RoomList = () => {
                       <h5 className="label">NAME</h5>
                       <input
                         type="text"
-                        value={playerName}
+                        value={user}
                         placeholder="Player name..."
-                        className="player-input"
+                        className="input"
                         onChange={handlePlayerNameChange}
                       />
                       <button
-                        className="join-button"
-                        disabled={playerName === ""}
+                        className="flame-button"
+                        disabled={user === ""}
                         onClick={() => {
                           handleJoinRoom(selectedRoom!.name!);
                           setPopupShown(false);

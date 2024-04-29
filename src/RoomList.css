@@ -29,7 +29,7 @@ ul {
   margin: 0;
 }
 
-.room:not(:last-child) {
+.bottom-border:not(:last-child) {
   border-bottom: 1px solid rgb(207, 207, 207); /* Adjust border style as needed */
 }
 
@@ -85,31 +85,6 @@ ul {
   display: flex;
 }
 
-.join-button {
-  background-color: white;
-  border-radius: 4px;
-  border: 1px solid rgb(112, 112, 112);
-  padding: 8px;
-  font-weight: bold;
-  min-width: fit-content;
-}
-
-.join-button:hover {
-  background-color: rgb(230, 230, 230);
-}
-
-.join-button:focus {
-  background: linear-gradient(to bottom, #ffbb00, #ff0000);
-}
-
-.join-button:disabled {
-  background-color: rgb(201, 201, 201);
-}
-
-.join-button:disabled:hover {
-  cursor: default;
-}
-
 .popup {
   background-color: white;
   padding: 40px;
@@ -132,12 +107,6 @@ ul {
   border: none;
 }
 
-.player-input {
-  /* margin-right: 12px; */
-  padding-top: 7px;
-  padding-bottom: 7px;
-}
-
 .header-small {
   font-size: 40px;
 }
@@ -155,4 +124,12 @@ ul {
 
 .label {
   margin-right: 6px;
+}
+
+.field-create {
+  align-items: center;
+}
+
+.create-row {
+  margin: 6px;
 }

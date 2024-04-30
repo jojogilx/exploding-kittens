@@ -5,6 +5,17 @@ import "./Room.css";
 import { UserContext } from "./App";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
+type Event = {
+  event: "joined" | "left" | "started" | "players" | "recipe";
+  value?: string | State;
+};
+
+type State = {
+  players: string[];
+  recipe: Recipe;
+};
+
+//PASS RECIPE
 export function Room() {
   const { roomName } = useParams();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -30,11 +41,31 @@ export function Room() {
 
   useEffect(() => {
     try {
-      const jsonString = JSON.stringify(lastJsonMessage); // Stringify the object
-      const decPlayers = JSON.parse(jsonString) as string[];
+      const jsonString = JSON.stringify(lastJsonMessage);
+      const event = JSON.parse(jsonString) as Event;
 
-      setPlayers(decPlayers);
-      console.log(`Got a new message:`, decPlayers);
+      switch (event.event) {
+        case "joined":
+          setPlayers([...players, event.value as string]);
+          break;
+
+        case "left":
+          setPlayers(players.filter((p) => p !== (event.value as string)));
+          break;
+        case "started":
+        //start game
+        case "players":
+          const value = event.value as State;
+          const playersList = value.players;
+          setPlayers([...playersList]);
+          break;
+        case "recipe":
+          break;
+        default:
+          break;
+      }
+
+      console.log(`Got a new message:`, event);
     } catch (error) {
       console.error(`Error parsing JSON message:`, error);
     }

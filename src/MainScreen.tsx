@@ -10,18 +10,19 @@ import { Link } from "react-router-dom";
 export const MainScreen = () => {
   return (
     <div className="content">
-      <h1>
-        <span className="exploding-text bold">EXPLODING </span>{" "}
-        <span className="white-text bold">KITTENS</span>
-      </h1>
-      <div id="edition">
-        Scala
-        <img src={scalaIcon} className="fwIcons" alt="" />
-        + React
-        <img src={reactIcon} className="fwIcons" alt="" />
-        Edition
+      <div id="Logo">
+        <h1 id="main-title">
+          <span className="exploding-text bold">EXPLODING </span>
+          <span className="white-text bold">KITTENS</span>
+        </h1>
+        <div id="edition">
+          Scala
+          <img src={scalaIcon} className="fwIcons" alt="" />
+          + React
+          <img src={reactIcon} className="fwIcons" alt="" />
+          Edition
+        </div>
       </div>
-
       <button className="start-button button">
         <Link to="/rooms" className="link">
           START

@@ -1,3 +1,19 @@
+@media screen and (orientation: landscape) and (max-height: 600px) {
+  .content {
+  }
+}
+
+@media screen and (orientation: landscape) and (min-height: 600px) {
+  .content {
+    margin: 24px;
+  }
+}
+
+@media screen and (orientation: portrait) {
+  .content {
+  }
+}
+
 .pages {
   background-color: white;
   margin-top: 50px;
@@ -29,7 +45,7 @@ ul {
   margin: 0;
 }
 
-.room:not(:last-child) {
+.bottom-border:not(:last-child) {
   border-bottom: 1px solid rgb(207, 207, 207); /* Adjust border style as needed */
 }
 

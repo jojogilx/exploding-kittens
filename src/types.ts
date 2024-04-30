@@ -11,9 +11,7 @@ export type Recipe = {
   minPlayers: number;
   maxPlayers: number;
   duration: number;
-  cards: Card[];
-  front_image?: string;
-  back_image?: string;
+  cards: [string, Card][];
 };
 
 export type Card = {

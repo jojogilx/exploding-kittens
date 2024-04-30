@@ -51,21 +51,6 @@ export function Room() {
               {recipe ? <div>details todo:</div> : <div>Choose a recipe</div>}
             </div>
           </div>
-
-          <div>
-            {recipe ? (
-              <div>
-                <span>display recipe</span>
-                <button>Change Recipe</button>
-              </div>
-            ) : (
-              <div>
-                <Link to="/recipes">
-                  <button>Choose Recipe</button>
-                </Link>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="flex-row row-spaced">

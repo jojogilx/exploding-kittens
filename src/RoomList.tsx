@@ -5,7 +5,7 @@ import closeIcon from "./images/closeIcon.webp";
 import catShrug from "./images/catshrug.png";
 import { Link } from "react-router-dom";
 import Popup from "reactjs-popup";
-import { Room } from "./types";
+import { Recipe, Room } from "./types";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { RoomListContext, UserContext } from "./App";
 
@@ -45,8 +45,10 @@ export const RoomList = () => {
 
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [popupShown, setPopupShown] = useState(false);
+  const [popupRecipeShown, setPopupRecipeShown] = useState(false);
   const [popupCreateShown, setPopupCreateShown] = useState(false);
   const [roomName, setRoomName] = useState("");
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   const joinable = (r: Room) => {
     return r.started || r.players.length == r.recipe?.maxPlayers;
@@ -80,16 +82,76 @@ export const RoomList = () => {
       .catch((error) => console.log("error was ", error));
   };
 
+  const CreateRoomPopup = () => {
+    return (
+      <Popup open={popupCreateShown} onClose={() => setPopupCreateShown(false)}>
+        <div className="popup">
+          <img
+            src={closeIcon}
+            alt="close"
+            className="icons-close clickable"
+            onClick={() => setPopupCreateShown(false)}
+          />
+          <h3>CREATE ROOM</h3>
+          <div>
+            <div className="flex-row field-create">
+              <h5 className="label">ROOM NAME</h5>
+              <input
+                type="text"
+                maxLength={20}
+                value={roomName}
+                placeholder="Room name..."
+                className="input pop2"
+                onChange={handleRoomNameChange}
+              />
+            </div>
+          </div>
+          <div className="flex-row field-create">
+            <h5 className="label">PLAYER NAME</h5>
+            <input
+              type="text"
+              value={user}
+              maxLength={20}
+              placeholder="Player name..."
+              className="input pop2"
+              onChange={handlePlayerNameChange}
+            />
+          </div>
+
+          <div>
+            <Link to={"/recipes"}>
+              <button className="flame-button  create-row">
+                {recipe ? "CHANGE RECIPE" : "CHOOSE RECIPE"}
+              </button>
+            </Link>
+          </div>
+
+          <button
+            className="flame-button create-row"
+            disabled={user === ""}
+            onClick={() => {
+              setPopupCreateShown(false);
+              handleCreateRoom();
+              handleJoinRoom(roomName!);
+            }}
+          >
+            CREATE
+          </button>
+        </div>
+      </Popup>
+    );
+  };
+
   return (
     <div className="content">
-      {/* { <Link to="/">
+      <Link to="/">
         <img src={homeIcon} height={"60px"} id="home-button" />
-      </Link>}  */}
+      </Link>
       <div className="header-rooms">
-        <h2 className="room-list-title">
+        <h3 className="room-list-title">
           <span className="white-text bold head2">ROOMS </span>
           <span className="exploding-text bold">LIST</span>
-        </h2>
+        </h3>
         <button
           className="button create-room-button"
           id="create-room"
@@ -100,51 +162,7 @@ export const RoomList = () => {
         >
           CREATE ROOM
         </button>
-        <Popup
-          open={popupCreateShown}
-          onClose={() => setPopupCreateShown(false)}
-        >
-          <div className="popup">
-            <img
-              src={closeIcon}
-              alt="close"
-              className="icons-close clickable"
-              onClick={() => setPopupCreateShown(false)}
-            />
-            <h3>CREATE ROOM</h3>
-            <div className="flex-row">
-              <h5 className="label">ROOM NAME</h5>
-              <input
-                type="text"
-                value={roomName}
-                placeholder="Room name..."
-                className="player-input pop2"
-                onChange={handleRoomNameChange}
-              />
-            </div>
-            <div className="flex-row">
-              <h5 className="label">PLAYER NAME</h5>
-              <input
-                type="text"
-                value={user}
-                placeholder="Player name..."
-                className="player-input pop2"
-                onChange={handlePlayerNameChange}
-              />
-            </div>
-            <button
-              className="join-button"
-              disabled={user === ""}
-              onClick={() => {
-                setPopupCreateShown(false);
-                handleCreateRoom();
-                handleJoinRoom(roomName!);
-              }}
-            >
-              CREATE
-            </button>
-          </div>
-        </Popup>
+        <CreateRoomPopup />
       </div>
 
       <div className="pages">
@@ -170,7 +188,7 @@ export const RoomList = () => {
                   {r.players.toString()}
                 </span>
                 <button
-                  className="join-button"
+                  className="flame-button"
                   disabled={joinable(r)}
                   onClick={() => {
                     setSelectedRoom(r);
@@ -201,11 +219,11 @@ export const RoomList = () => {
                         type="text"
                         value={user}
                         placeholder="Player name..."
-                        className="player-input"
+                        className="input"
                         onChange={handlePlayerNameChange}
                       />
                       <button
-                        className="join-button"
+                        className="flame-button"
                         disabled={user === ""}
                         onClick={() => {
                           handleJoinRoom(selectedRoom!.name!);

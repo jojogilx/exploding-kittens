@@ -130,3 +130,33 @@ button:hover {
 .padded {
   padding: 24px;
 }
+
+.input {
+  height: fit-content;
+  padding: 4px;
+}
+
+.flame-button {
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid rgb(112, 112, 112);
+  padding: 8px;
+  font-weight: bold;
+  min-width: fit-content;
+}
+
+.flame-button:hover {
+  background-color: rgb(230, 230, 230);
+}
+
+.flame-button:focus {
+  background: linear-gradient(to bottom, #ffbb00, #ff0000);
+}
+
+.flame-button:disabled {
+  background-color: rgb(201, 201, 201);
+}
+
+.flame-button:disabled:hover {
+  cursor: default;
+}

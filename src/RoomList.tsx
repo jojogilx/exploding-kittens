@@ -66,19 +66,16 @@ export const RoomList = () => {
   };
 
   const handleCreateRoom = () => {
-    postData("http://127.0.0.1:8080/create");
-  };
+    const url = "http://127.0.0.1:8080/create";
 
-  const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: roomName }),
-  };
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomName: roomName, playerName: user }),
+    };
 
-  const postData = (url: string) => {
     fetch(url, requestOptions)
-      .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((_) => handleJoinRoom(roomName))
       .catch((error) => console.log("error was ", error));
   };
 
@@ -128,11 +125,11 @@ export const RoomList = () => {
 
           <button
             className="flame-button create-row"
-            disabled={user === ""}
+            disabled={user === "" || recipe === null}
             onClick={() => {
               setPopupCreateShown(false);
               handleCreateRoom();
-              handleJoinRoom(roomName!);
+              //   handleJoinRoom(roomName!);
             }}
           >
             CREATE

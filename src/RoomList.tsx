@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, memo } from "react";
 import "./RoomList.css";
-import homeIcon from "./images/home.png";
 import closeIcon from "./images/closeIcon.webp";
-import catShrug from "./images/catshrug.png";
+import catNotFound from "./images/CatNoutFound.svg";
 import { Link } from "react-router-dom";
 import Popup from "reactjs-popup";
 import { Recipe, Room } from "./types";
@@ -20,9 +19,7 @@ export const RoomList = () => {
     shouldReconnect: () => true,
   });
 
-  // Run when the connection state (readyState) changes
   useEffect(() => {
-    console.log("Connection state changed");
     if (readyState === ReadyState.OPEN) {
       console.log("conn");
     }
@@ -30,7 +27,7 @@ export const RoomList = () => {
 
   useEffect(() => {
     try {
-      const jsonString = JSON.stringify(lastJsonMessage); // Stringify the object
+      const jsonString = JSON.stringify(lastJsonMessage);
       const decodedRooms = JSON.parse(jsonString) as Room[];
 
       setRoomList(decodedRooms);
@@ -79,7 +76,7 @@ export const RoomList = () => {
       .catch((error) => console.log("error was ", error));
   };
 
-  const CreateRoomPopup = () => {
+  const CreateRoomPopup = memo(() => {
     return (
       <Popup open={popupCreateShown} onClose={() => setPopupCreateShown(false)}>
         <div className="popup">
@@ -88,6 +85,7 @@ export const RoomList = () => {
             alt="close"
             className="icons-close clickable"
             onClick={() => setPopupCreateShown(false)}
+            draggable="false"
           />
           <h3>CREATE ROOM</h3>
           <div>
@@ -125,7 +123,7 @@ export const RoomList = () => {
 
           <button
             className="flame-button create-row"
-            disabled={user === "" || recipe === null}
+            disabled={user === "" /*|| recipe === null*/}
             onClick={() => {
               setPopupCreateShown(false);
               handleCreateRoom();
@@ -137,18 +135,15 @@ export const RoomList = () => {
         </div>
       </Popup>
     );
-  };
+  });
 
   return (
     <div className="content">
-      <Link to="/">
-        <img src={homeIcon} height={"60px"} id="home-button" />
-      </Link>
       <div className="header-rooms">
-        <h3 className="room-list-title">
+        <h2 className="room-list-title">
           <span className="white-text bold head2">ROOMS </span>
           <span className="exploding-text bold">LIST</span>
-        </h3>
+        </h2>
         <button
           className="button create-room-button"
           id="create-room"
@@ -163,29 +158,31 @@ export const RoomList = () => {
       </div>
 
       <div className="pages">
-        <ul className="rooms-list bottom-border">
-          {roomList?.length > 0 ? (
-            roomList.map((r) => (
-              <li className="room" key={r.name}>
-                <span className="room-name bold">{r.name}</span>
-                <span className="status">
+        {roomList?.length > 0 ? (
+          <ul className="rooms-list bottom-border">
+            {roomList.map((r) => (
+              <li className="room flex-row" key={r.name}>
+                <div className="flex-row">
                   <div
                     id="ball"
                     className={joinable(r) ? "joinable" : "not-joinable"}
                   ></div>
+                  <span className="room-name bold">{r.name}</span>
+                  {/* <span className="status">
                   {r.started
                     ? "Game started"
                     : r.players.length === r.recipe?.maxPlayers
                       ? "Game full"
                       : ""}
-                </span>
-
+                </span> */}
+                </div>
                 <span className="players-list">
                   <span className="bold">Players ({r.players.length}):</span>{" "}
                   {r.players.toString()}
                 </span>
                 <button
                   className="flame-button"
+                  id="join-button"
                   disabled={joinable(r)}
                   onClick={() => {
                     setSelectedRoom(r);
@@ -210,7 +207,7 @@ export const RoomList = () => {
                     <h3>JOIN {selectedRoom?.name.toLocaleUpperCase()}</h3>
                     <span>Players: {r.players.toString()}</span>
                     <span>Recipe: Not chosen</span>
-                    <div className="flex-row">
+                    <div className="flex-row" id="join-popup-fields">
                       <h5 className="label">NAME</h5>
                       <input
                         type="text"
@@ -233,13 +230,14 @@ export const RoomList = () => {
                   </div>
                 </Popup>
               </li>
-            ))
-          ) : (
-            <div className="flex-row">
-              <h3>No rooms to display!</h3> <img src={catShrug} />
-            </div>
-          )}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <div className="flex-row" id="no-rooms">
+            <img src={catNotFound} draggable="false" id="cat-not-found" />
+            <h3>No rooms to display!</h3>
+          </div>
+        )}
       </div>
     </div>
   );

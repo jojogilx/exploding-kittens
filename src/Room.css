@@ -1,11 +1,90 @@
-.grid-2row {
-  display: grid;
-  height: 70%;
-  grid-template-rows: 1fr 1fr;
+.game-container {
+  height: 100vh;
+  width: 100vw;
+  padding: 24px;
 }
 
-.grid-5row {
-  display: grid;
-  height: 100%;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+#table {
+  max-width: 70vh;
+  position: absolute;
+  z-index: 1;
+  top: 60;
+}
+
+.table-seatings {
+  margin: 60px;
+
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
+}
+
+.seat-image {
+  width: 200px;
+  height: 200px;
+}
+
+.seat {
+  z-index: 0;
+}
+
+.seat:nth-child(2) {
+  position: absolute;
+  top: 0;
+  left: 130;
+}
+
+.seat:nth-child(3) {
+  position: absolute;
+  top: 0;
+  left: 520;
+}
+
+.seat:nth-child(4) {
+  position: absolute;
+  top: 350;
+  left: 0;
+}
+
+.seat:nth-child(5) {
+  position: absolute;
+  top: 640;
+  left: 310;
+}
+.seat:nth-child(6) {
+  position: absolute;
+  top: 350;
+  left: 650;
+}
+
+.tag {
+  color: aqua;
+  font-size: large;
+}
+
+#hand-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(0deg, rgb(248, 248, 248), rgba(255, 255, 255, 0));
+  height: 200px;
+  width: 100vw;
+  gap: 20px;
+}
+
+.card img {
+  width: 180px;
+}
+
+.card:hover {
+  cursor: pointer;
+}
+
+.grey {
+  filter: brightness(0.6);
+}
+
+.grey:hover {
+  cursor: not-allowed;
 }

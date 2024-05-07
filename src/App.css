@@ -24,7 +24,11 @@
   }
 
   h2 {
-    font-size: 7vh;
+    font-size: 8vh;
+  }
+
+  h3 {
+    font-size: 6vh;
   }
 }
 
@@ -35,6 +39,9 @@
 
   h2 {
     font-size: 70px;
+  }
+  h3 {
+    font-size: 8vw;
   }
 }
 
@@ -47,7 +54,7 @@ h2 {
 }
 
 h3 {
-  font-size: 45px;
+  margin: 0;
 }
 
 .button {

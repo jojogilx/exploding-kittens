@@ -1,22 +1,23 @@
-@media screen and (orientation: landscape) and (max-height: 600px) {
-  .content {
-  }
-}
-
-@media screen and (orientation: landscape) and (min-height: 600px) {
+@media screen and (orientation: landscape) {
   .content {
     margin: 24px;
+  }
+  .header-rooms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
 @media screen and (orientation: portrait) {
-  .content {
-  }
 }
-
+.room-list-title {
+  font-size: 40px;
+}
 .pages {
   background-color: white;
-  margin-top: 50px;
+  margin-top: 24px;
   border-radius: 12px;
 
   background-image: radial-gradient(#111111 0.5px, white 0.5px);
@@ -28,11 +29,10 @@ body {
 }
 
 .room {
-  display: grid;
-  grid-template-columns: 10% 30% 50% 10%;
   padding-top: 14px;
   padding-bottom: 14px;
   align-items: center;
+  justify-content: space-between;
 }
 
 .rooms-list {
@@ -46,25 +46,12 @@ ul {
 }
 
 .bottom-border:not(:last-child) {
-  border-bottom: 1px solid rgb(207, 207, 207); /* Adjust border style as needed */
+  border-bottom: 1px solid rgb(207, 207, 207);
 }
 
 .create-room-button {
   font-size: 24px;
   padding: 10px 20px 10px 20px;
-}
-
-.header-rooms {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#home-button {
-  position: absolute;
-  top: 40px;
-  left: 20px;
 }
 
 #home-button:hover {
@@ -76,7 +63,6 @@ ul {
   border-radius: 20px;
   height: 20px;
   border: 1px solid rgb(164, 164, 164);
-  margin-right: 10px;
 }
 
 .joinable {
@@ -148,4 +134,27 @@ ul {
 
 .create-row {
   margin: 6px;
+}
+
+.room-name {
+  align-self: center;
+  margin-left: 12px;
+}
+
+.players-list {
+  margin-left: 12px;
+}
+
+#join-popup-fields {
+  align-items: center;
+}
+
+#no-rooms {
+  align-items: center;
+  padding: 20px;
+}
+
+#cat-not-found {
+  width: 40%;
+  max-width: 400px;
 }

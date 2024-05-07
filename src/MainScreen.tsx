@@ -17,9 +17,9 @@ export const MainScreen = () => {
         </h1>
         <div id="edition">
           Scala
-          <img src={scalaIcon} className="fwIcons" alt="" />
+          <img src={scalaIcon} className="fwIcons" alt="" draggable="false" />
           + React
-          <img src={reactIcon} className="fwIcons" alt="" />
+          <img src={reactIcon} className="fwIcons" alt="" draggable="false" />
           Edition
         </div>
       </div>
@@ -28,7 +28,7 @@ export const MainScreen = () => {
           START
         </Link>
       </button>
-      <img src={cat} id="cat-lighter" alt="" />
+      <img src={cat} id="cat-lighter" alt="" draggable="false" />
     </div>
   );
 };

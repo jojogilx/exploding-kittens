@@ -15,13 +15,19 @@
 }
 
 .ingredients-card {
-  margin-top: 20px;
+  position: absolute;
+  left: 30%;
+}
+
+.ingredients-card img {
+  max-height: 40vh;
 }
 
 .ingredients {
+  position: absolute;
   z-index: 4;
-  top: 0;
-  right: 0;
+  top: 100;
+  left: 50;
 }
 
 .recipe-unfolded {
@@ -40,4 +46,9 @@
 
 .carrousel {
   padding-bottom: 40px;
+}
+
+#close-recipe-chooser {
+  width: 30px;
+  margin: 12px;
 }

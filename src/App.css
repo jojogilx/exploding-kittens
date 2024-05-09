@@ -4,6 +4,9 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+  margin: 0;
+}
 .white-text {
   color: white;
 }
@@ -166,4 +169,29 @@ button:hover {
 
 .flame-button:disabled:hover {
   cursor: default;
+}
+
+.icons-close {
+  width: 20px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.icons-close:hover {
+  background-color: rgba(0, 0, 0, 0.077);
+}
+
+.grey {
+  filter: brightness(0.6);
+}
+
+.grey:hover {
+  cursor: not-allowed;
+}
+
+.pointer {
+  cursor: pointer;
 }

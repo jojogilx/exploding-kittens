@@ -2,16 +2,17 @@ export type Room = {
   name: string;
   players: string[];
   started: boolean;
-  recipe?: Recipe;
+  recipe: Recipe;
 };
 
 export type Recipe = {
   name: string;
   description: string;
-  minPlayers: number;
-  maxPlayers: number;
+  min_players: number;
+  max_players: number;
   duration: number;
-  cards: [string, Card][];
+  cards: [Card, string][];
+  available: boolean;
 };
 
 export type Card = {

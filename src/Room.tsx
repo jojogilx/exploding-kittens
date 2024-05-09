@@ -1,28 +1,19 @@
-import { useContext, useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Recipe, RoomEvent, Card } from "./types";
 import "./Room.css";
-import { UserContext } from "./App";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import seat from "./images/Seat.svg";
 import table from "./images/table.svg";
-//PASS RECIPE
+import { getURL } from "./utils";
+
 export function Room() {
   const { roomName } = useParams();
-  const [recipe, setRecipe] = useState<Recipe | null>({
-    name: "Nope Sauce",
-    description: "A game thats not gonna go the way you planned",
-    defuses_on_start: 1,
-    minPlayers: 2,
-    maxPlayers: 5,
-    duration: 15,
-    cards: [],
-  } as Recipe);
   const [playersSeatings, setPlayersSeatings] = useState(
     [] as [string, number][],
   );
-  const [startDisabled, setStartDisabled] = useState(true);
-  const { user } = useContext(UserContext);
+
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
 
   const [isStarted, setIsStarted] = useState(false);
 
@@ -30,30 +21,60 @@ export function Room() {
 
   const [currentPlayer, setCurrentPlayer] = useState("");
 
+  const user = localStorage.getItem("userId");
+
   const WS_PLAYER_ROOM = "ws://127.0.0.1:8080/join/" + roomName + "/" + user;
 
   const { lastJsonMessage, readyState, sendMessage } = useWebSocket(
     WS_PLAYER_ROOM,
     {
-      share: false,
+      share: true,
       shouldReconnect: () => true,
     },
   );
 
+  // Connection status monitoring
   useEffect(() => {
-    console.log("Connection state changed");
-    if (readyState === ReadyState.OPEN) {
-      console.log("conn");
+    switch (readyState) {
+      case ReadyState.CONNECTING:
+        console.log("WebSocket connecting...");
+        break;
+      case ReadyState.OPEN:
+        console.log("WebSocket connected");
+        break;
+      case ReadyState.CLOSING:
+        console.log("WebSocket closing...");
+        break;
+      case ReadyState.CLOSED:
+        console.log("WebSocket closed");
+        // Additional actions after the connection is closed
+        // reconnect logic here if needed
+        break;
+      default:
+        break;
     }
   }, [readyState]);
 
+  const heartbeatInterval = 30000;
+
   useEffect(() => {
-    console.log("player is", recipe?.maxPlayers);
-  }, [recipe]);
+    const heartbeatTimer = setInterval(() => {
+      if (readyState === ReadyState.OPEN) {
+        sendMessage("ping");
+      }
+    }, heartbeatInterval);
+
+    // Clear the heartbeat timer when the component unmounts or WebSocket connection is closed
+    return () => {
+      clearInterval(heartbeatTimer);
+    };
+  }, [readyState, sendMessage]);
 
   useEffect(() => {
     try {
       const jsonString = JSON.stringify(lastJsonMessage);
+      if (jsonString === null) return;
+      console.log(`Got a new message:`, jsonString);
       const event = JSON.parse(jsonString) as RoomEvent;
 
       switch (event.event) {
@@ -65,11 +86,11 @@ export function Room() {
           setPlayersSeatings([...event.player_list]);
           break;
         case "started":
-          //start game
+          setIsStarted(true);
           break;
         case "room_state":
           setPlayersSeatings([...event.player_list]);
-          // setRecipe(event.recipe as Recipe);
+          setRecipe(event.recipe as Recipe);
           break;
         case "hand":
           setHand(event.player_hand);
@@ -80,129 +101,115 @@ export function Room() {
         default:
           break;
       }
-
-      console.log(`Got a new message:`, event);
     } catch (error) {
       console.error(`Error parsing JSON message:`, error);
     }
   }, [lastJsonMessage]);
 
-  useEffect(() => {
-    console.log(currentPlayer);
-    console.log(user);
-    console.log(user === currentPlayer);
-  }, [currentPlayer]);
-
-  const getURL = (name: string) => {
-    return new URL(
-      "./images/cards/" +
-        name.toLocaleLowerCase().split(" ").join("").trim() +
-        ".jpeg",
-      import.meta.url,
-    ).href;
-  };
-
   const handleStart = () => {
     sendMessage("started");
-    // const url = "http://127.0.0.1:8080/start/" + roomName;
-
-    // const requestOptions = {
-    //   method: "GET",
-    //   headers: { "Content-Type": "application/json" },
-    // };
-
-    // fetch(url, requestOptions)
-    //   .then((_) => setIsStarted(true))
-    //   .catch((error) => console.log("error was ", error));
+    setIsStarted(true);
   };
+
+  const handleSkip = () => {
+    sendMessage("n");
+  };
+
+  const notifyBackendOnUnload = () => {
+    sendMessage("left");
+  };
+
+  window.addEventListener("beforeunload", notifyBackendOnUnload);
 
   const handlePlayCard = (i: number) => {
-    console.log("ss");
+    console.log("clicked card");
     if (user !== currentPlayer) return;
-    sendMessage(i);
-    console.log("d");
-  };
-
-  const RoomComponent = () => {
-    return (
-      <div className="container padded">
-        <h2 id="room-name">{roomName}</h2>
-        <div className="grid-2row">
-          <div className="flex-row row-spaced">
-            <div>
-              <h4>Recipe details</h4>
-              <div>
-                {recipe ? <div>details todo:</div> : <div>Choose a recipe</div>}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-row row-spaced">
-            <div>
-              <h4>Players</h4>
-              <div>
-                {playersSeatings?.length ? (
-                  <ul className="grid-5row">
-                    {playersSeatings.map(([p, i]) => (
-                      <div className="player-display">{p}</div>
-                    ))}
-                  </ul>
-                ) : (
-                  <div>No players </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    sendMessage(i.toString());
+    console.log("played ", i, " aka ", hand[i]);
   };
 
   return (
     <div className="game-container">
-      <div className="table-seatings">
-        <img src={table} alt="" id="table" draggable="false" />
-        {[...Array(recipe?.maxPlayers)].map((_, i) => {
-          return (
-            <div className="seat" id={"seat" + i}>
-              <img
-                src={seat}
-                className="overlay middle seat-image"
-                draggable="false"
-              />
-              <div className="overlay middle tag">
-                {playersSeatings.length <= i
-                  ? playersSeatings.find(([_, ind]) => ind === i)?.[0]
-                  : ""}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div>
-        {!isStarted ? (
-          <button onClick={() => handleStart()}>START GAME</button>
-        ) : (
-          <></>
-        )}
-      </div>
+      <div className="side-game flex-column">
+        <div>
+          <h4>Players</h4>
+          <div>
+            {playersSeatings?.length ? (
+              <ul className="">
+                {playersSeatings.map(([p, _]) => (
+                  <div className="player-display">{p}</div>
+                ))}
+              </ul>
+            ) : (
+              <div>No players </div>
+            )}
+          </div>
+        </div>
+        <div className="flex-column">
+          <h4>Recipe Details</h4>
+          {recipe ? (
+            <img
+              id="recipe-card"
+              src={getURL("./images/recipes/", recipe!.name, ".png")}
+              alt=""
+              draggable="false"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
 
-      <div id="hand-container" className="flex-row">
-        {hand.map((c, i) => {
-          return (
-            <div
-              className={"card" + (user === currentPlayer ? " grey" : "")}
-              onClick={() => handlePlayCard(i)}
-            >
-              <img
-                src={getURL(c.name)}
-                alt=""
-                className={"recipe-face"}
-                draggable="false"
-              />
-            </div>
-          );
-        })}
+        <div>
+          {!isStarted ? (
+            <button className="flame-button" onClick={() => handleStart()}>
+              START GAME
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
+      <div className="game">
+        <div className="table-seatings">
+          <img src={table} alt="" id="table" draggable="false" />
+          {playersSeatings.map(([p, i]) => {
+            return (
+              <div className="seat" id={"seat" + i}>
+                <img src={seat} className="seat-image" draggable="false" />
+                <div
+                  className={
+                    "tag " + (currentPlayer === p ? "current-player" : "")
+                  }
+                >
+                  {p}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div id="hand-container" className="flex-row">
+          {hand.map((c, i) => {
+            return (
+              <div
+                className={"card" + (user === currentPlayer ? "" : " grey")}
+                onClick={() => handlePlayCard(i)}
+              >
+                <img
+                  src={getURL("./images/cards/", c.name, ".jpeg")}
+                  alt=""
+                  className={"recipe-face"}
+                  draggable="false"
+                />
+              </div>
+            );
+          })}
+          {user === currentPlayer ? (
+            <button onClick={() => handleSkip()}>Skip</button>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   );

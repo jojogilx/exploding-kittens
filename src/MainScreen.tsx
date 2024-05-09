@@ -3,11 +3,21 @@ import cat from "./images/catlighter.png";
 import scalaIcon from "./images/scalaIcoWhite.png";
 import reactIcon from "./images/reactico.svg";
 import "./MainScreen.css";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 //clicking on the start could explode the page
 
 export const MainScreen = () => {
+  const navigate = useNavigate();
+
+  const handlePrompt = () => {
+    const userInput = window.prompt("Please enter your name:");
+    if (userInput !== null) {
+      localStorage.setItem("userId", userInput.trim());
+      navigate("/rooms/");
+    }
+  };
+
   return (
     <div className="content">
       <div id="Logo">
@@ -23,10 +33,8 @@ export const MainScreen = () => {
           Edition
         </div>
       </div>
-      <button className="start-button button">
-        <Link to="/rooms" className="link">
-          START
-        </Link>
+      <button className="start-button button" onClick={() => handlePrompt()}>
+        START
       </button>
       <img src={cat} id="cat-lighter" alt="" draggable="false" />
     </div>

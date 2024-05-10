@@ -55,21 +55,6 @@ export function Room() {
     }
   }, [readyState]);
 
-  const heartbeatInterval = 30000;
-
-  useEffect(() => {
-    const heartbeatTimer = setInterval(() => {
-      if (readyState === ReadyState.OPEN) {
-        sendMessage("ping");
-      }
-    }, heartbeatInterval);
-
-    // Clear the heartbeat timer when the component unmounts or WebSocket connection is closed
-    return () => {
-      clearInterval(heartbeatTimer);
-    };
-  }, [readyState, sendMessage]);
-
   useEffect(() => {
     try {
       const jsonString = JSON.stringify(lastJsonMessage);
@@ -96,8 +81,11 @@ export function Room() {
           setHand(event.player_hand);
           break;
         case "new_turn":
-          console.log("new turn");
           setCurrentPlayer(event.player);
+          break;
+        case "piles":
+          console.log("piles");
+          break;
         default:
           break;
       }
@@ -108,7 +96,6 @@ export function Room() {
 
   const handleStart = () => {
     sendMessage("started");
-    setIsStarted(true);
   };
 
   const handleSkip = () => {

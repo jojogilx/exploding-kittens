@@ -46,7 +46,7 @@ export const RoomList = () => {
   const [isChoosingRecipe, setIsChoosingRecipe] = useState(false);
 
   const joinable = (r: Room) => {
-    return r.started || r.players.length == r.recipe?.maxPlayers;
+    return r.started || r.players.length == r.recipe?.max_players;
   };
 
   const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,8 +70,10 @@ export const RoomList = () => {
       }),
     };
 
+    console.log(requestOptions);
+
     fetch(url, requestOptions)
-      .then((_) => handleJoinRoom(roomName))
+      .then((_) => /*handleJoinRoom(roomName)*/ console.log("a"))
       .catch((error) => console.log("error was ", error));
   };
 

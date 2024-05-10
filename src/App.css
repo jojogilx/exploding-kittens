@@ -195,3 +195,7 @@ button:hover {
 .pointer {
   cursor: pointer;
 }
+
+.error {
+  color: red;
+}

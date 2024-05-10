@@ -44,6 +44,7 @@ export const RoomList = () => {
   const [roomName, setRoomName] = useState("");
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isChoosingRecipe, setIsChoosingRecipe] = useState(false);
+  const [error, setError] = useState("");
 
   const joinable = (r: Room) => {
     return r.started || r.players.length == r.recipe?.max_players;
@@ -70,28 +71,48 @@ export const RoomList = () => {
       }),
     };
 
-    console.log(requestOptions);
-
     fetch(url, requestOptions)
-      .then((_) => /*handleJoinRoom(roomName)*/ console.log("a"))
-      .catch((error) => console.log("error was ", error));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to create room: " + response.statusText);
+        }
+        return response;
+      })
+      .then((_) => {
+        console.log("Room created successfully");
+        setPopupCreateShown(false);
+        /*handleJoinRoom(roomName)*/
+      })
+      .catch((error) => {
+        console.error("Error creating room:", error);
+        setError(error.message); // Set error message state
+      });
   };
 
   const CreateRoomPopup = memo(() => {
     return (
-      <Popup open={popupCreateShown} onClose={() => setPopupCreateShown(false)}>
+      <Popup
+        open={popupCreateShown}
+        onClose={() => {
+          setPopupCreateShown(false);
+          setError("");
+        }}
+      >
         <div className="popup">
           <img
             src={closeIcon}
             alt="close"
             className="icons-close clickable"
-            onClick={() => setPopupCreateShown(false)}
+            onClick={() => {
+              setPopupCreateShown(false);
+              setError("");
+            }}
             draggable="false"
           />
-          <h3>CREATE ROOM </h3>
+          <h3>CREATE GAME </h3>
           <div>
             <div className="flex-row field-create">
-              <h5 className="label">ROOM NAME</h5>
+              <h5 className="label">GAME NAME</h5>
               <input
                 type="text"
                 maxLength={20}
@@ -102,7 +123,6 @@ export const RoomList = () => {
               />
             </div>
           </div>
-
           {recipe ? (
             <div className="flex-row">
               <div className="bold">Recipe: </div>
@@ -111,7 +131,6 @@ export const RoomList = () => {
           ) : (
             <></>
           )}
-
           <div className="flex-row">
             <button
               className="flame-button  create-row"
@@ -124,7 +143,6 @@ export const RoomList = () => {
               className="flame-button create-row"
               disabled={user === "" || recipe === null}
               onClick={() => {
-                setPopupCreateShown(false);
                 handleCreateRoom();
                 //   handleJoinRoom(roomName!);
               }}
@@ -132,6 +150,7 @@ export const RoomList = () => {
               CREATE
             </button>
           </div>
+          {error && <div className="error">{error}</div>}
         </div>
       </Popup>
     );
@@ -142,7 +161,7 @@ export const RoomList = () => {
       <div className="content">
         <div className="header-rooms">
           <h2 className="room-list-title">
-            <span className="white-text bold head2">ROOMS </span>
+            <span className="white-text bold head2">GAMES </span>
             <span className="exploding-text bold">LIST</span>
           </h2>
           <button
@@ -152,7 +171,7 @@ export const RoomList = () => {
               setPopupCreateShown(true);
             }}
           >
-            CREATE ROOM
+            CREATE GAME
           </button>
           <CreateRoomPopup />
         </div>
@@ -201,7 +220,7 @@ export const RoomList = () => {
           ) : (
             <div className="flex-row" id="no-rooms">
               <img src={catNotFound} draggable="false" id="cat-not-found" />
-              <h3>No rooms to display!</h3>
+              <h3>No games to display!</h3>
             </div>
           )}
         </div>

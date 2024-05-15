@@ -103,3 +103,7 @@
 #recipe-card {
   width: 75%;
 }
+
+.card-drawn {
+  width: 200px;
+}

@@ -15,3 +15,19 @@ function App() {
 }
 
 export default App;
+
+export const TryPing = () => {
+  const url = "http://127.0.0.1:8080/ping";
+
+  const requestOptions = {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  };
+
+  return fetch(url, requestOptions).then((response) => {
+    if (!response.ok) {
+      throw new Error("Failed to connect:" + response.statusText);
+    }
+    return response;
+  });
+};

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import "./RoomList.css";
 import closeIcon from "./images/closeIcon.webp";
 import catNotFound from "./images/CatNoutFound.svg";
@@ -12,7 +12,7 @@ import { RecipeChooserComponent } from "./RecipeChooserComponent";
 export const RoomList = () => {
   const navigate = useNavigate();
 
-  const user = localStorage.getItem("userId");
+  let user = localStorage.getItem("userId");
 
   const [roomList, setRoomList] = useState([] as Room[]);
 
@@ -50,6 +50,14 @@ export const RoomList = () => {
     return r.started || r.players.length == r.recipe?.max_players;
   };
 
+  const askNameChange = () => {
+    const userInput = window.prompt("Please enter your name:");
+    if (userInput !== null && userInput !== "") {
+      localStorage.setItem("userId", userInput.trim());
+      user = userInput.trim();
+    }
+  };
+
   const handleRoomNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
   };
@@ -59,6 +67,10 @@ export const RoomList = () => {
   };
 
   const handleCreateRoom = () => {
+    while (user === null) {
+      askNameChange();
+    }
+
     const url = "http://127.0.0.1:8080/create";
 
     const requestOptions = {
@@ -141,7 +153,7 @@ export const RoomList = () => {
 
             <button
               className="flame-button create-row"
-              disabled={user === "" || recipe === null}
+              disabled={recipe === null}
               onClick={() => {
                 handleCreateRoom();
                 //   handleJoinRoom(roomName!);

@@ -27,7 +27,7 @@ export function Room() {
   const [hand, setHand] = useState([] as Card[]);
   const [drawnCard, setDrawnCard] = useState<Card | null>(null);
   const [showDrawnCard, setShowDrawnCard] = useState(false);
-  const [showPrompt, setShownPrompt] = useState(false);
+  const [prompt, setPrompt] = useState<null | PromptType>(null);
 
   const [currentPlayer, setCurrentPlayer] = useState("");
   const [info, setInfo] = useState("");
@@ -130,24 +130,28 @@ export function Room() {
           setHand([...hand, card]);
           //trigger exploding overlay TODO
           break;
+        case "play_card":
+          setLastPlayedCard(event.card as Card);
+          // trigger defuse animation
+          break;
         case "target_player":
-          //trigger prompt(target)
+          setPrompt("target_player");
           break;
         case "bury_card": //todo change
           setBury({ card: event.card, min: event.min, max: event.max });
-          setShownPrompt(true);
+          setPrompt("bury_card");
           break;
         case "garbage_collection":
-          //todo trigger prompt garb coll
-          break;
-        case "share_the_future": // maybe this one is not even needed
-          //todo trigger prompt alter
+          setPrompt("garbage_collection");
           break;
         case "alter_the_future":
-          //todo trigger prompt alter
+          setPrompt("alter_the_future");
           break;
         case "see_the_future":
           //todo trigger  cards overlay
+          break;
+        case "choose_card":
+          setPrompt("choose_card");
           break;
         default:
           break;
@@ -165,16 +169,16 @@ export function Room() {
     sendMessage("left");
   };
 
-  const buryPrompt = () => {
+  const PromptComponent = () => {
     return (
       <Popup
-        open={showPrompt}
+        open={prompt !== null}
         onClose={() => {
-          setShownPrompt(false);
+          setPrompt(null);
         }}
       >
         <div className="popup">
-          <h3>BURY CARD </h3>
+          <h3>BURY CARD</h3>
           <div>
             <div className="flex-row field-create">
               <h5 className="label">
@@ -290,6 +294,7 @@ export function Room() {
       </div>
 
       <div className="game">
+        <PromptComponent />
         <div className="table-seatings overlay middle">
           <img src={tableImage} alt="" id="table" draggable="false" />
           {playersSeatings.map(({ playerID, seat }) => {

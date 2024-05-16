@@ -50,7 +50,6 @@ export type RoomEvent =
   | { event: "choose_card"; cards: Card[] }
   | { event: "garbage_collection" }
   | { event: "alter_the_future"; next_cards: Card[] }
-  | { event: "share_the_future"; cards: Card[] }
   | { event: "see_the_future"; cards: Card[] };
 
 export type Bury = { min: number; max: number; card?: Card };
